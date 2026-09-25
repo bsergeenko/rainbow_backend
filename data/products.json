@@ -1,0 +1,121 @@
+[
+  {
+    "id": "women-raincoat",
+    "name": "Rainbow Raincoat Women",
+    "category": "women",
+    "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
+    "customizable": true,
+    "sizes": ["XS", "S", "M", "L", "XL"],
+    "colors": [
+        "black",
+        "red",
+        "blue",
+        "aquablue",
+        "turquoise",
+        "pink",
+        "yellow",
+        "plum",
+        "green"],
+    "price": 50,
+    "imageFolder": "women",
+    "imagePrefix": "women_raincoat"
+  },
+  {
+    "id": "men-raincoat",
+    "name": "Rainbow Raincoat Men",
+    "category": "men",
+    "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
+    "customizable": true,
+    "sizes": ["XS", "S", "M", "L", "XL"],
+    "colors": ["black", "grey"],
+    "price": 50,
+    "imageFolder": "men",
+    "imagePrefix": "men_raincoat"
+  },
+  {
+    "id": "kids-raincoat-girls",
+    "name": "Rainbow Raincoat Girls",
+    "category": "kids",
+    "subcategory": "girls",
+    "description": "Transparenter Kinderregenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
+    "customizable": true,
+    "sizes": ["2-3", "4-7", "8-12"],
+    "colors": [
+        "red",
+        "blue",
+        "aquablue",
+        "green",
+        "pink",
+        "magenta",
+        "yellow"
+    ],
+    "pricesBySize": {
+        "2-3": 25,
+        "4-7": 28,
+        "8-12": 32
+    },
+    "imageFolder": "kids/girl",
+    "imagePrefix": "kids_raincoat_girl"
+  },
+  {
+    "id": "kids-raincoat-boys",
+    "name": "Rainbow Raincoat Boys",
+    "category": "kids",
+    "subcategory": "boys",
+    "description": "Transparenter Kinderregenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
+    "customizable": true,
+    "sizes": ["2-3", "4-7", "8-12"],
+    "colors": [
+        "red",
+        "blue",
+        "aquablue",
+        "green",
+        "pink",
+        "magenta",
+        "yellow"
+    ],
+    "pricesBySize": {
+        "2-3": 25,
+        "4-7": 28,
+        "8-12": 32
+    },
+    "imageFolder": "kids/boy",
+    "imagePrefix": "kids_raincoat_boy"
+  },
+  {
+    "id": "dog-raincoat",
+    "name": "Rainbow Raincoat Dog",
+    "category": "dogs",
+    "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
+    "customizable": true,
+    "sizes": ["XS", "S", "M", "L", "XL"],
+    "colors": ["red"],
+    "price": 17,
+    "imageFolder": "dogs",
+    "imagePrefix": "dog_raincoat"
+  },
+  {
+    "id": "women-trenchcoat",
+    "name": "Rainbow Trenchcoat",
+    "category": "women",
+    "description": "Klassischer Damen-Trenchcoat aus wasserabweisendem Material. Das Modell ist in mehreren Farben erhältlich.",
+    "customizable": false,
+    "sizes": ["XS", "S", "M", "L", "XL"],
+    "colors": ["beige", "brown", "orange", "red"],
+    "price": 50,
+    "imageFolder": "women/standard",
+    "imagePrefix": "trenchcoat"
+    },
+    {
+    "id": "women-trenchcoat-gloss",
+    "name": "Rainbow Trenchcoat Gloss",
+    "category": "women",
+    "description": "Damen-Trenchcoat in glänzender Lackoptik aus wasserabweisendem Material. Das Modell ist in mehreren Farben erhältlich.",
+    "customizable": false,
+    "sizes": ["XS", "S", "M", "L", "XL"],
+    "colors": ["black", "red", "blue", "silver"],
+    "price": 50,
+    "imageFolder": "women/standard",
+    "imagePrefix": "trenchcoat_gloss"
+    }
+]
