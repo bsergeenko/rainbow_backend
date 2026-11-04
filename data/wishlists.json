@@ -1,1 +1,52 @@
-[]
+[
+  {
+    "userId": "user-1790381154767",
+    "items": [
+      {
+        "itemId": "wishlist-1790524134836",
+        "productId": "women-raincoat",
+        "color": "black"
+      },
+      {
+        "itemId": "wishlist-1790524137983",
+        "productId": "women-raincoat",
+        "color": "red"
+      },
+      {
+        "itemId": "wishlist-1790524139790",
+        "productId": "women-raincoat",
+        "color": "blue"
+      },
+      {
+        "itemId": "wishlist-1790524151723",
+        "productId": "men-raincoat",
+        "color": "black"
+      }
+    ]
+  },
+  {
+    "userId": "user-1792587242624",
+    "items": [
+      {
+        "itemId": "wishlist-1793745674481",
+        "productId": "women-raincoat",
+        "color": "black"
+      }
+    ]
+  },
+  {
+    "userId": "user-1793746838596",
+    "items": [
+      {
+        "itemId": "wishlist-1793746872908",
+        "productId": "women-raincoat",
+        "color": "black"
+      },
+      {
+        "itemId": "wishlist-1793746875679",
+        "productId": "women-raincoat",
+        "color": "pink"
+      }
+    ]
+  }
+]

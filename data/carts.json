@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "userId": "user-1790381154767",
+    "items": [
+      {
+        "itemId": "cart-1790381678874",
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": ""
+      },
+      {
+        "itemId": "cart-1790381727125",
+        "productId": "men-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": ""
+      }
+    ]
+  },
+  {
+    "userId": "user-1792587242624",
+    "items": [
+      {
+        "itemId": "cart-1793745681558",
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": ""
+      }
+    ]
+  },
+  {
+    "userId": "user-1793746838596",
+    "items": []
+  }
+]

@@ -14,6 +14,7 @@ const wishlistsFile = path.join(__dirname, "data", "wishlists.json");
 const cartsFile = path.join(__dirname, "data", "carts.json");
 const ordersFile = path.join(__dirname, "data", "orders.json");
 const contactsFile = path.join(__dirname, "data", "contacts.json");
+const productsFile = path.join(__dirname, "data", "products.json");
 
 // App configuration
 const app = express();
@@ -111,6 +112,29 @@ function writeUsers(users) {
   fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht angemeldet."
+    });
+  }
+
+  const users = readUsers();
+
+  const user = users.find(
+    (user) => user.id === req.session.userId
+  );
+
+  if (!user || user.role !== "admin") {
+    return res.status(403).json({
+      message: "Keine Berechtigung."
+    });
+  }
+
+  req.user = user;
+  next();
+}
+
 // Reads all wishlists from wishlists.json
 function readWishlists() {
   return JSON.parse(fs.readFileSync(wishlistsFile, "utf8"));
@@ -149,6 +173,11 @@ function readContacts() {
 // Saves all contact messages back to contacts.json
 function writeContacts(contacts) {
   fs.writeFileSync(contactsFile, JSON.stringify(contacts, null, 2));
+}
+
+// Saves all products back to products.json
+function writeProducts(products) {
+  fs.writeFileSync(productsFile, JSON.stringify(products, null, 2));
 }
 
 // General route
@@ -235,7 +264,8 @@ app.post("/register", async (req, res) => {
     firstName,
     lastName,
     email,
-    passwordHash
+    passwordHash,
+    role: "customer",
   };
 
   users.push(newUser);
@@ -355,7 +385,8 @@ app.get("/me", (req, res) => {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
-    email: user.email
+    email: user.email,
+    role: user.role
   });
 });
 
@@ -370,6 +401,59 @@ app.post("/logout", (req, res) => {
 
     res.json({
       message: "Erfolgreich ausgeloggt."
+    });
+  });
+});
+
+// Deletes the currently logged-in user's account
+app.delete("/me", (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht angemeldet."
+    });
+  }
+
+  const userId = req.session.userId;
+
+  const users = readUsers();
+  const userIndex = users.findIndex(
+    (user) => user.id === userId
+  );
+
+  if (userIndex === -1) {
+    return res.status(404).json({
+      message: "Benutzer wurde nicht gefunden."
+    });
+  }
+
+  if (users[userIndex].role === "admin") {
+    return res.status(400).json({
+      message: "Der Administrator kann sein eigenes Konto nicht löschen."
+    });
+  }
+
+  users.splice(userIndex, 1);
+  writeUsers(users);
+
+  const wishlists = readWishlists();
+  writeWishlists(
+    wishlists.filter((wishlist) => wishlist.userId !== userId)
+  );
+
+  const carts = readCarts();
+  writeCarts(
+    carts.filter((cart) => cart.userId !== userId)
+  );
+
+  req.session.destroy((error) => {
+    if (error) {
+      return res.status(500).json({
+        message: "Konto wurde gelöscht, aber die Sitzung konnte nicht beendet werden."
+      });
+    }
+
+    res.json({
+      message: "Dein Konto wurde gelöscht."
     });
   });
 });
@@ -1060,6 +1144,176 @@ app.post("/contact", (req, res) => {
   });
 });
 
+// Admin API
+app.get("/users", requireAdmin, (req, res) => {
+  const users = readUsers();
+
+  const safeUsers = users.map((user) => ({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role
+  }));
+
+  res.json(safeUsers);
+});
+
+// Updates a user's information (admin only)
+app.put("/users/:id", requireAdmin, (req, res) => {
+  const { firstName, lastName, email } = req.body;
+
+  if (!firstName || !lastName || !email) {
+    return res.status(400).json({
+      message: "Vorname, Nachname und E-Mail-Adresse sind erforderlich."
+    });
+  }
+
+  const users = readUsers();
+
+  const userIndex = users.findIndex(
+    (user) => user.id === req.params.id
+  );
+
+  if (userIndex === -1) {
+    return res.status(404).json({
+      message: "Benutzer wurde nicht gefunden."
+    });
+  }
+
+  const duplicateEmail = users.find(
+    (user) =>
+      user.id !== req.params.id &&
+      user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (duplicateEmail) {
+    return res.status(409).json({
+      message: "Diese E-Mail-Adresse ist bereits registriert."
+    });
+  }
+
+  users[userIndex] = {
+    ...users[userIndex],
+    firstName,
+    lastName,
+    email
+  };
+
+  writeUsers(users);
+
+  const updatedUser = users[userIndex];
+
+  res.json({
+    id: updatedUser.id,
+    firstName: updatedUser.firstName,
+    lastName: updatedUser.lastName,
+    email: updatedUser.email,
+    role: updatedUser.role
+  });
+});
+
+// Deletes a user (admin only)
+app.delete("/users/:id", requireAdmin, (req, res) => {
+  const users = readUsers();
+
+  const userIndex = users.findIndex(
+    (user) => user.id === req.params.id
+  );
+
+  if (userIndex === -1) {
+    return res.status(404).json({
+      message: "Benutzer wurde nicht gefunden."
+    });
+  }
+
+  if (req.user.id === req.params.id) {
+    return res.status(400).json({
+      message: "Der Administrator kann sich nicht selbst löschen."
+    });
+  }
+
+  const deletedUser = users[userIndex];
+
+  users.splice(userIndex, 1);
+  writeUsers(users);
+
+  const wishlists = readWishlists();
+  writeWishlists(
+    wishlists.filter((wishlist) => wishlist.userId !== deletedUser.id)
+  );
+
+  const carts = readCarts();
+  writeCarts(
+    carts.filter((cart) => cart.userId !== deletedUser.id)
+  );
+
+  res.json({
+    message: "Benutzer wurde gelöscht."
+  });
+});
+
+// Updates a product's information (admin only)
+app.put("/products/:id", requireAdmin, (req, res) => {
+  const { name, description, price, pricesBySize } = req.body;
+
+  const productIndex = products.findIndex(
+    (product) => product.id === req.params.id
+  );
+
+  if (productIndex === -1) {
+    return res.status(404).json({
+      message: "Produkt wurde nicht gefunden."
+    });
+  }
+
+  const product = products[productIndex];
+
+  if (!name || !description) {
+    return res.status(400).json({
+      message: "Produktname und Beschreibung sind erforderlich."
+    });
+  }
+
+  if (product.category === "kids") {
+    if (!pricesBySize || typeof pricesBySize !== "object") {
+      return res.status(400).json({
+        message: "Preise pro Größe sind erforderlich."
+      });
+    }
+
+    for (const size of product.sizes) {
+      const sizePrice = Number(pricesBySize[size]);
+
+      if (!Number.isFinite(sizePrice) || sizePrice < 0) {
+        return res.status(400).json({
+          message: "Ungültiger Preis."
+        });
+      }
+    }
+  } else {
+    const numericPrice = Number(price);
+
+    if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+      return res.status(400).json({
+        message: "Ungültiger Preis."
+      });
+    }
+  }
+
+  products[productIndex] = {
+    ...product,
+    name,
+    description,
+    ...(product.category === "kids"
+      ? { pricesBySize }
+      : { price: Number(price) })
+  };
+
+  writeProducts(products);
+
+  res.json(products[productIndex]);
+});
 
 // Start server
 app.listen(PORT, () => {

@@ -1,1 +1,33 @@
-[]
+[
+  {
+    "id": "order-1793747072408",
+    "userId": "user-1793746838596",
+    "customer": {
+      "firstName": "me",
+      "lastName": "muster",
+      "email": "muster@rainbow.com",
+      "street": "musterstr. 7",
+      "postalCode": "22211",
+      "city": "musterland",
+      "country": "musterland"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "pink",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 50,
+    "total": 54.99,
+    "createdAt": "2026-11-03T23:04:32.408Z"
+  }
+]
