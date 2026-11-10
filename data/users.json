@@ -1,61 +1,10 @@
 [
   {
-    "id": "user-1790381154767",
-    "firstName": "bb",
-    "lastName": "serg",
-    "email": "baia.baia@yahoo.com",
-    "passwordHash": "$2b$10$sa9Bl07YsGM4Fo/3mVQFw.bCB9Pl91pdyi3Rg8i3ZRN9JmV.5O.5q"
-  },
-  {
-    "id": "user-1792571534586",
-    "firstName": "Test",
-    "lastName": "Customer",
-    "email": "customer-test@example.com",
-    "passwordHash": "$2b$10$18s7OPPiPHzJBCH1q3oWg.FW.6USYu4T1oXk75N0uS1vu50Lf2ERm"
-  },
-  {
-    "id": "user-1792574879144",
-    "firstName": "Test2",
-    "lastName": "Customer",
-    "email": "customer-test2@example.com",
-    "passwordHash": "$2b$10$uE65Ca7jAHBvtB4BVRAhCekbbJS0H/O8EbEXd83Luygn/aDZRFtdi"
-  },
-  {
-    "id": "user-1792575362971",
-    "firstName": "Test3",
-    "lastName": "Customer",
-    "email": "customer-test3@example.com",
-    "passwordHash": "$2b$10$QGCRb.ae.a0wuYmHQudQ2ebQZu9QTgMFZi2EN1pOXAUyZ5Aosgii."
-  },
-  {
-    "id": "user-1792579035812",
-    "firstName": "Test4",
-    "lastName": "Customer",
-    "email": "customer-test4@example.com",
-    "passwordHash": "$2b$10$X81DVslDQPmJCMqipqKIVO0thkwG7lBj0A0DmodVuEmM2p2vuOVPW"
-  },
-  {
-    "id": "user-1792579705168",
-    "firstName": "Ge�ndert",
-    "lastName": "Customer",
-    "email": "customer-test5@example.com",
-    "passwordHash": "$2b$10$y8Rg7EaZH.S4EO0P3hkg3u5rbuYA3EFUN9dJSclbiy7fHFnj/6o/y",
-    "role": "customer"
-  },
-  {
     "id": "user-1792587242624",
     "firstName": "Admin",
     "lastName": "Rainbow",
     "email": "admin@rainbow.design",
     "passwordHash": "$2b$10$JbFqu4stO08Ii5Wc/kBF6elnPTLa1.QhHTu28YYPCwgcs0awgi7Xi",
     "role": "admin"
-  },
-  {
-    "id": "user-1793746838596",
-    "firstName": "me",
-    "lastName": "muster",
-    "email": "muster@rainbow.com",
-    "passwordHash": "$2b$10$2ZQv4Iom/xXu4IoD/0F9hOHxOtqiJJis3grFASSU/WgNPyLNl6Q/i",
-    "role": "customer"
   }
 ]
