@@ -33,6 +33,13 @@ const shippingOptions = [
   }
 ];
 
+const orderStatuses = [
+  "new",
+  "processing",
+  "shipped",
+  "delivered"
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -67,7 +74,7 @@ app.use(
 
 // Finds product images and groups them by color
 function getProductImagesByColor(folder, prefix, colors) {
-  const fullPath = path.join(__dirname, "public", "assets", folder);
+  const fullPath = path.join(__dirname, "public", "assets", folder); 
 
   if (!fs.existsSync(fullPath)) {
     return {};
@@ -1072,6 +1079,7 @@ const shippingCost = selectedShipping.price;
     items: calculatedItems,
     subtotal,
     total,
+    status: "new",
     createdAt: new Date().toISOString()
   };
 
@@ -1097,7 +1105,7 @@ const shippingCost = selectedShipping.price;
   res.status(201).json(newOrder);
 });
 
-// Returns all orders of the currently logged-in user
+// Returns orders depending on the logged-in user's role
 app.get("/orders", (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({
@@ -1105,13 +1113,66 @@ app.get("/orders", (req, res) => {
     });
   }
 
-  const orders = readOrders();
-
-  const userOrders = orders.filter(
-    (order) => order.userId === req.session.userId
+  const users = readUsers();
+  const currentUser = users.find(
+    (user) => user.id === req.session.userId
   );
 
+  if (!currentUser) {
+    return res.status(404).json({
+      message: "Benutzer nicht gefunden."
+    });
+  }
+
+  const orders = readOrders();
+
+  if (currentUser.role === "admin") {
+    return res.json(
+      [...orders].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+    );
+  }
+
+  const userOrders = orders
+    .filter((order) => order.userId === req.session.userId)
+    .sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
   res.json(userOrders);
+});
+
+// Updates an order status (admin only)
+app.put("/orders/:id/status", requireAdmin, (req, res) => {
+  const { status } = req.body;
+
+  if (!orderStatuses.includes(status)) {
+    return res.status(400).json({
+      message: "Ungültiger Bestellstatus."
+    });
+  }
+
+  const orders = readOrders();
+
+  const orderIndex = orders.findIndex(
+    (order) => order.id === req.params.id
+  );
+
+  if (orderIndex === -1) {
+    return res.status(404).json({
+      message: "Bestellung nicht gefunden."
+    });
+  }
+
+  orders[orderIndex] = {
+    ...orders[orderIndex],
+    status
+  };
+
+  writeOrders(orders);
+
+  res.json(orders[orderIndex]);
 });
 
 // Contact API
@@ -1159,99 +1220,99 @@ app.get("/users", requireAdmin, (req, res) => {
   res.json(safeUsers);
 });
 
-// Updates a user's information (admin only)
-app.put("/users/:id", requireAdmin, (req, res) => {
-  const { firstName, lastName, email } = req.body;
+// // Updates a user's information (admin only)
+// app.put("/users/:id", requireAdmin, (req, res) => {
+//   const { firstName, lastName, email } = req.body;
 
-  if (!firstName || !lastName || !email) {
-    return res.status(400).json({
-      message: "Vorname, Nachname und E-Mail-Adresse sind erforderlich."
-    });
-  }
+//   if (!firstName || !lastName || !email) {
+//     return res.status(400).json({
+//       message: "Vorname, Nachname und E-Mail-Adresse sind erforderlich."
+//     });
+//   }
 
-  const users = readUsers();
+//   const users = readUsers();
 
-  const userIndex = users.findIndex(
-    (user) => user.id === req.params.id
-  );
+//   const userIndex = users.findIndex(
+//     (user) => user.id === req.params.id
+//   );
 
-  if (userIndex === -1) {
-    return res.status(404).json({
-      message: "Benutzer wurde nicht gefunden."
-    });
-  }
+//   if (userIndex === -1) {
+//     return res.status(404).json({
+//       message: "Benutzer wurde nicht gefunden."
+//     });
+//   }
 
-  const duplicateEmail = users.find(
-    (user) =>
-      user.id !== req.params.id &&
-      user.email.toLowerCase() === email.toLowerCase()
-  );
+//   const duplicateEmail = users.find(
+//     (user) =>
+//       user.id !== req.params.id &&
+//       user.email.toLowerCase() === email.toLowerCase()
+//   );
 
-  if (duplicateEmail) {
-    return res.status(409).json({
-      message: "Diese E-Mail-Adresse ist bereits registriert."
-    });
-  }
+//   if (duplicateEmail) {
+//     return res.status(409).json({
+//       message: "Diese E-Mail-Adresse ist bereits registriert."
+//     });
+//   }
 
-  users[userIndex] = {
-    ...users[userIndex],
-    firstName,
-    lastName,
-    email
-  };
+//   users[userIndex] = {
+//     ...users[userIndex],
+//     firstName,
+//     lastName,
+//     email
+//   };
 
-  writeUsers(users);
+//   writeUsers(users);
 
-  const updatedUser = users[userIndex];
+//   const updatedUser = users[userIndex];
 
-  res.json({
-    id: updatedUser.id,
-    firstName: updatedUser.firstName,
-    lastName: updatedUser.lastName,
-    email: updatedUser.email,
-    role: updatedUser.role
-  });
-});
+//   res.json({
+//     id: updatedUser.id,
+//     firstName: updatedUser.firstName,
+//     lastName: updatedUser.lastName,
+//     email: updatedUser.email,
+//     role: updatedUser.role
+//   });
+// });
 
-// Deletes a user (admin only)
-app.delete("/users/:id", requireAdmin, (req, res) => {
-  const users = readUsers();
+// // Deletes a user (admin only)
+// app.delete("/users/:id", requireAdmin, (req, res) => {
+//   const users = readUsers();
 
-  const userIndex = users.findIndex(
-    (user) => user.id === req.params.id
-  );
+//   const userIndex = users.findIndex(
+//     (user) => user.id === req.params.id
+//   );
 
-  if (userIndex === -1) {
-    return res.status(404).json({
-      message: "Benutzer wurde nicht gefunden."
-    });
-  }
+//   if (userIndex === -1) {
+//     return res.status(404).json({
+//       message: "Benutzer wurde nicht gefunden."
+//     });
+//   }
 
-  if (req.user.id === req.params.id) {
-    return res.status(400).json({
-      message: "Der Administrator kann sich nicht selbst löschen."
-    });
-  }
+//   if (req.user.id === req.params.id) {
+//     return res.status(400).json({
+//       message: "Der Administrator kann sich nicht selbst löschen."
+//     });
+//   }
 
-  const deletedUser = users[userIndex];
+//   const deletedUser = users[userIndex];
 
-  users.splice(userIndex, 1);
-  writeUsers(users);
+//   users.splice(userIndex, 1);
+//   writeUsers(users);
 
-  const wishlists = readWishlists();
-  writeWishlists(
-    wishlists.filter((wishlist) => wishlist.userId !== deletedUser.id)
-  );
+//   const wishlists = readWishlists();
+//   writeWishlists(
+//     wishlists.filter((wishlist) => wishlist.userId !== deletedUser.id)
+//   );
 
-  const carts = readCarts();
-  writeCarts(
-    carts.filter((cart) => cart.userId !== deletedUser.id)
-  );
+//   const carts = readCarts();
+//   writeCarts(
+//     carts.filter((cart) => cart.userId !== deletedUser.id)
+//   );
 
-  res.json({
-    message: "Benutzer wurde gelöscht."
-  });
-});
+//   res.json({
+//     message: "Benutzer wurde gelöscht."
+//   });
+// });
 
 // Updates a product's information (admin only)
 app.put("/products/:id", requireAdmin, (req, res) => {
