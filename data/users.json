@@ -6,19 +6,5 @@
     "email": "admin@rainbow.design",
     "passwordHash": "$2b$10$JbFqu4stO08Ii5Wc/kBF6elnPTLa1.QhHTu28YYPCwgcs0awgi7Xi",
     "role": "admin"
-  },
-  {
-    "id": "user-1794558228390",
-    "firstName": "Test",
-    "lastName": "User",
-    "email": "m.mustermann@rainbow.com",
-    "passwordHash": "$2b$10$cZPtC5OXXv49XWeAKMV7eu3HAa2F0cw3ryDepoWroIEm/H20wMO9W",
-    "role": "customer",
-    "address": {
-      "street": "Neue Teststraße 99",
-      "postalCode": "22041",
-      "city": "Hamburg",
-      "country": "Deutschland"
-    }
   }
 ]

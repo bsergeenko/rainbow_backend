@@ -838,21 +838,12 @@ if (isCustomConfiguration) {
   }
 }
 if (designId) {
-  let allowedDesigns = [];
+  const allDesigns = [
+    ...designs.adult,
+    ...designs.kids
+  ];
 
-  if (product.category === "women" || product.category === "men") {
-    allowedDesigns = designs.adult;
-  }
-
-  if (product.category === "kids") {
-    allowedDesigns = designs.kids;
-  }
-
-  if (product.category === "dogs") {
-    allowedDesigns = [...designs.adult, ...designs.kids];
-  }
-
-  const designExists = allowedDesigns.some(
+  const designExists = allDesigns.some(
     (design) => design.id === designId
   );
 
@@ -1152,21 +1143,12 @@ for (const item of items) {
   }
 
   if (item.designId) {
-    let allowedDesigns = [];
+    const allDesigns = [
+      ...designs.adult,
+      ...designs.kids
+    ];
 
-    if (product.category === "women" || product.category === "men") {
-      allowedDesigns = designs.adult;
-    }
-
-    if (product.category === "kids") {
-      allowedDesigns = designs.kids;
-    }
-
-    if (product.category === "dogs") {
-      allowedDesigns = [...designs.adult, ...designs.kids];
-    }
-
-    const designExists = allowedDesigns.some(
+    const designExists = allDesigns.some(
       (design) => design.id === item.designId
     );
 

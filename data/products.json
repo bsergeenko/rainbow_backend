@@ -1,7 +1,7 @@
 [
   {
     "id": "women-raincoat",
-    "name": "Rainbow Raincoat Women",
+    "name": "Rainbow Regenmantel",
     "category": "women",
     "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
     "customizable": true,
@@ -29,7 +29,7 @@
   },
   {
     "id": "men-raincoat",
-    "name": "Rainbow Raincoat Men",
+    "name": "Rainbow Regenmantel",
     "category": "men",
     "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
     "customizable": true,
@@ -50,7 +50,7 @@
   },
   {
     "id": "kids-raincoat-girls",
-    "name": "Rainbow Raincoat Girls",
+    "name": "Rainbow Regenmantel",
     "category": "kids",
     "subcategory": "girls",
     "description": "Transparenter Kinderregenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
@@ -79,7 +79,7 @@
   },
   {
     "id": "kids-raincoat-boys",
-    "name": "Rainbow Raincoat Boys",
+    "name": "Rainbow Regenmantel",
     "category": "kids",
     "subcategory": "boys",
     "description": "Transparenter Kinderregenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
@@ -108,7 +108,7 @@
   },
   {
     "id": "dog-raincoat",
-    "name": "Rainbow Raincoat Dog",
+    "name": "Rainbow Regenmantel",
     "category": "dogs",
     "description": "Transparenter Regenmantel mit farbigen Details. Das Modell kann in Farbe und Rückenmotiv individualisiert werden.",
     "customizable": true,
