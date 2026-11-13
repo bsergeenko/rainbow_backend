@@ -37,7 +37,8 @@ const orderStatuses = [
   "new",
   "processing",
   "shipped",
-  "delivered"
+  "delivered",
+  "cancelled"
 ];
 
 app.use(
@@ -244,7 +245,16 @@ app.get("/designs", (req, res) => {
 // Authentication
 // Register a new user
 app.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    street = "",
+    postalCode = "",
+    city = "",
+    country = ""
+  } = req.body;
 
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
@@ -266,14 +276,20 @@ app.post("/register", async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const newUser = {
-    id: `user-${Date.now()}`,
-    firstName,
-    lastName,
-    email,
-    passwordHash,
-    role: "customer",
-  };
+const newUser = {
+  id: `user-${Date.now()}`,
+  firstName,
+  lastName,
+  email,
+  passwordHash,
+  role: "customer",
+  address: {
+    street,
+    postalCode,
+    city,
+    country
+  }
+};
 
   users.push(newUser);
   writeUsers(users);
@@ -393,7 +409,146 @@ app.get("/me", (req, res) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    role: user.role
+    role: user.role,
+    address: user.address || {
+      street: "",
+      postalCode: "",
+      city: "",
+      country: ""
+    }
+  });
+});
+
+// Updates the currently logged-in user's profile
+app.put("/me", (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht eingeloggt."
+    });
+  }
+
+  const {
+    firstName,
+    lastName,
+    email,
+    street = "",
+    postalCode = "",
+    city = "",
+    country = ""
+  } = req.body;
+
+  if (!firstName || !lastName || !email) {
+    return res.status(400).json({
+      message: "Vorname, Nachname und E-Mail-Adresse sind erforderlich."
+    });
+  }
+
+  const users = readUsers();
+
+  const userIndex = users.findIndex(
+    (user) => user.id === req.session.userId
+  );
+
+  if (userIndex === -1) {
+    return res.status(404).json({
+      message: "Benutzer nicht gefunden."
+    });
+  }
+
+  const duplicateEmail = users.find(
+    (user) =>
+      user.id !== req.session.userId &&
+      user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (duplicateEmail) {
+    return res.status(409).json({
+      message: "Diese E-Mail-Adresse ist bereits registriert."
+    });
+  }
+
+  users[userIndex] = {
+    ...users[userIndex],
+    firstName,
+    lastName,
+    email,
+    address: {
+      street,
+      postalCode,
+      city,
+      country
+    }
+  };
+
+  writeUsers(users);
+
+  const updatedUser = users[userIndex];
+
+  res.json({
+    id: updatedUser.id,
+    firstName: updatedUser.firstName,
+    lastName: updatedUser.lastName,
+    email: updatedUser.email,
+    role: updatedUser.role,
+    address: updatedUser.address
+  });
+});
+
+// Updates the currently logged-in user's password
+app.put("/me/password", async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht eingeloggt."
+    });
+  }
+
+  const {
+    currentPassword,
+    newPassword
+  } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({
+      message: "Aktuelles und neues Passwort sind erforderlich."
+    });
+  }
+
+  const users = readUsers();
+
+  const userIndex = users.findIndex(
+    (user) => user.id === req.session.userId
+  );
+
+  if (userIndex === -1) {
+    return res.status(404).json({
+      message: "Benutzer nicht gefunden."
+    });
+  }
+
+  const user = users[userIndex];
+
+  const passwordIsCorrect = await bcrypt.compare(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!passwordIsCorrect) {
+    return res.status(400).json({
+      message: "Das aktuelle Passwort ist falsch."
+    });
+  }
+
+  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+  users[userIndex] = {
+    ...user,
+    passwordHash: newPasswordHash
+  };
+
+  writeUsers(users);
+
+  res.json({
+    message: "Passwort wurde erfolgreich geändert."
   });
 });
 
@@ -919,7 +1074,8 @@ app.post("/orders", (req, res) => {
     customer,
     shippingMethod,
     paymentMethod,
-    items
+    items,
+    saveAddress = false
   } = req.body;
 
   if (
@@ -1086,6 +1242,28 @@ const shippingCost = selectedShipping.price;
   orders.push(newOrder);
   writeOrders(orders);
 
+  if (req.session.userId && saveAddress) {
+    const users = readUsers();
+
+    const userIndex = users.findIndex(
+      (user) => user.id === req.session.userId
+    );
+
+    if (userIndex !== -1) {
+      users[userIndex] = {
+        ...users[userIndex],
+        address: {
+          street: customer.street,
+          postalCode: customer.postalCode,
+          city: customer.city,
+          country: customer.country
+        }
+      };
+
+      writeUsers(users);
+    }
+  }
+
   // Clears the cart after a successful order
   if (req.session.userId) {
     const carts = readCarts();
@@ -1143,6 +1321,50 @@ app.get("/orders", (req, res) => {
   res.json(userOrders);
 });
 
+// Cancels an order of the currently logged-in user
+app.put("/orders/:id/cancel", (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht eingeloggt."
+    });
+  }
+
+  const orders = readOrders();
+
+  const orderIndex = orders.findIndex(
+    (order) => order.id === req.params.id
+  );
+
+  if (orderIndex === -1) {
+    return res.status(404).json({
+      message: "Bestellung nicht gefunden."
+    });
+  }
+
+  const order = orders[orderIndex];
+
+  if (order.userId !== req.session.userId) {
+    return res.status(403).json({
+      message: "Keine Berechtigung."
+    });
+  }
+
+  if (!["new", "processing"].includes(order.status)) {
+    return res.status(400).json({
+      message: "Diese Bestellung kann nicht mehr storniert werden."
+    });
+  }
+
+  orders[orderIndex] = {
+    ...order,
+    status: "cancelled"
+  };
+
+  writeOrders(orders);
+
+  res.json(orders[orderIndex]);
+});
+
 // Updates an order status (admin only)
 app.put("/orders/:id/status", requireAdmin, (req, res) => {
   const { status } = req.body;
@@ -1162,6 +1384,12 @@ app.put("/orders/:id/status", requireAdmin, (req, res) => {
   if (orderIndex === -1) {
     return res.status(404).json({
       message: "Bestellung nicht gefunden."
+    });
+  }
+
+  if (orders[orderIndex].status === "cancelled") {
+    return res.status(400).json({
+      message: "Eine stornierte Bestellung kann nicht mehr geändert werden."
     });
   }
 
@@ -1214,7 +1442,13 @@ app.get("/users", requireAdmin, (req, res) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    role: user.role
+    role: user.role,
+    address: user.address || {
+      street: "",
+      postalCode: "",
+      city: "",
+      country: ""
+    }
   }));
 
   res.json(safeUsers);

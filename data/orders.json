@@ -1,1 +1,77 @@
-[]
+[
+  {
+    "id": "order-1794558271153",
+    "userId": "user-1794558228390",
+    "customer": {
+      "firstName": "muster",
+      "lastName": "mustermann",
+      "email": "m.mustermann@rainbow.com",
+      "street": "muster",
+      "postalCode": "22222",
+      "city": "muster",
+      "country": "muster"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "women-raincoat",
+        "color": "red",
+        "size": "XS",
+        "quantity": 1,
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      },
+      {
+        "productId": "women-raincoat",
+        "color": "plum",
+        "size": "M",
+        "quantity": 1,
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 100,
+    "total": 104.99,
+    "status": "cancelled",
+    "createdAt": "2026-11-13T08:24:31.153Z"
+  },
+  {
+    "id": "order-1794559709909",
+    "userId": "user-1794558228390",
+    "customer": {
+      "firstName": "Test",
+      "lastName": "User",
+      "email": "m.mustermann@rainbow.com",
+      "street": "Neue Teststraße 99",
+      "postalCode": "22041",
+      "city": "Hamburg",
+      "country": "Deutschland"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "itemId": "cart-1794559506434",
+        "productId": "dog-raincoat",
+        "quantity": 1,
+        "color": "red",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 17,
+        "itemTotal": 17
+      }
+    ],
+    "subtotal": 17,
+    "total": 21.99,
+    "status": "new",
+    "createdAt": "2026-11-13T08:48:29.909Z"
+  }
+]
