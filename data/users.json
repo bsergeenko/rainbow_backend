@@ -6,5 +6,34 @@
     "email": "admin@rainbow.design",
     "passwordHash": "$2b$10$JbFqu4stO08Ii5Wc/kBF6elnPTLa1.QhHTu28YYPCwgcs0awgi7Xi",
     "role": "main_admin"
+  },
+  {
+    "id": "user-1794661023284",
+    "firstName": "Admin2",
+    "lastName": "Rainbow2",
+    "email": "admin2@rainbow.design",
+    "passwordHash": "$2b$10$aHonTz9uEf8xxjrWVE8uAOQNATTOaTUPoL8s0V/1gBMs.rnD87Z6W",
+    "role": "admin",
+    "address": {
+      "street": "",
+      "postalCode": "",
+      "city": "",
+      "country": ""
+    },
+    "createdAt": "2026-11-14T12:57:03.284Z"
+  },
+  {
+    "id": "user-1794661114264",
+    "firstName": "muster",
+    "lastName": "mustermann",
+    "email": "m.mustermann@rainbow.com",
+    "passwordHash": "$2b$10$HAVDgJjL1ZiKheR55PNDXOUsqLXd8bkIdpm4H7f.TWFRw1IiyyTVq",
+    "role": "user",
+    "address": {
+      "street": "muster",
+      "postalCode": "11111",
+      "city": "muster",
+      "country": "Muster"
+    }
   }
 ]

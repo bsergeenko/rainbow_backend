@@ -1,1 +1,192 @@
-[]
+[
+  {
+    "id": "order-1794661198965",
+    "userId": "user-1794661114264",
+    "customer": {
+      "firstName": "muster",
+      "lastName": "mustermann",
+      "email": "m.mustermann@rainbow.com",
+      "street": "muster",
+      "postalCode": "11111",
+      "city": "muster",
+      "country": "Muster"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "men-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 50,
+    "total": 54.99,
+    "status": "cancelled",
+    "createdAt": "2026-11-14T12:59:58.965Z"
+  },
+  {
+    "id": "order-1794667517800",
+    "userId": "user-1794661114264",
+    "customer": {
+      "firstName": "muster",
+      "lastName": "mustermann",
+      "email": "m.mustermann@rainbow.com",
+      "street": "muster",
+      "postalCode": "11111",
+      "city": "muster",
+      "country": "Muster"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "red",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      },
+      {
+        "productId": "kids-raincoat-girls",
+        "quantity": 1,
+        "color": "red",
+        "size": "8-12",
+        "designId": "adult-design-02",
+        "pocketRequest": "",
+        "unitPrice": 32,
+        "itemTotal": 32
+      },
+      {
+        "productId": "men-raincoat",
+        "quantity": 1,
+        "color": "grey",
+        "size": "XL",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 132,
+    "total": 136.99,
+    "status": "new",
+    "createdAt": "2026-11-14T14:45:17.800Z"
+  },
+  {
+    "id": "order-1794667551415",
+    "userId": "user-1794661114264",
+    "customer": {
+      "firstName": "muster",
+      "lastName": "mustermann",
+      "email": "m.mustermann@rainbow.com",
+      "street": "muster",
+      "postalCode": "11111",
+      "city": "muster",
+      "country": "Muster"
+    },
+    "shippingMethod": "express",
+    "shippingCost": 9.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "kids-raincoat-girls",
+        "quantity": 1,
+        "color": "magenta",
+        "size": "2-3",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 25,
+        "itemTotal": 25
+      },
+      {
+        "productId": "dog-raincoat",
+        "quantity": 1,
+        "color": "red",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 17,
+        "itemTotal": 17
+      }
+    ],
+    "subtotal": 42,
+    "total": 51.99,
+    "status": "new",
+    "createdAt": "2026-11-14T14:45:51.415Z"
+  },
+  {
+    "id": "order-1794667617448",
+    "userId": null,
+    "customer": {
+      "firstName": "m",
+      "lastName": "muster",
+      "email": "m@muster.com",
+      "street": "mm",
+      "postalCode": "11111",
+      "city": "m",
+      "country": "mmm"
+    },
+    "shippingMethod": "standard",
+    "shippingCost": 4.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": null,
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 50,
+    "total": 54.99,
+    "status": "new",
+    "createdAt": "2026-11-14T14:46:57.448Z"
+  },
+  {
+    "id": "order-1794667727205",
+    "userId": "user-1794667675571",
+    "customer": {
+      "firstName": "Mann",
+      "lastName": "Mano",
+      "email": "rain@rain.com",
+      "street": "rain",
+      "postalCode": "11111",
+      "city": "r",
+      "country": "rai"
+    },
+    "shippingMethod": "express",
+    "shippingCost": 9.99,
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "men-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "M",
+        "designId": "adult-design-35",
+        "pocketRequest": "",
+        "unitPrice": 50,
+        "itemTotal": 50
+      }
+    ],
+    "subtotal": 50,
+    "total": 59.99,
+    "status": "new",
+    "createdAt": "2026-11-14T14:48:47.205Z"
+  }
+]

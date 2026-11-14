@@ -309,7 +309,7 @@ const newUser = {
   lastName,
   email,
   passwordHash,
-  role: "customer",
+  role: "user",
   address: {
     street,
     postalCode,
@@ -1314,7 +1314,7 @@ app.get("/orders", (req, res) => {
 
   const orders = readOrders();
 
-  if (currentUser.role === "admin") {
+  if (["admin", "main_admin"].includes(currentUser.role)) {
     return res.json(
       [...orders].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -1379,7 +1379,14 @@ app.put("/orders/:id/cancel", (req, res) => {
 app.put("/orders/:id/status", requireAdmin, (req, res) => {
   const { status } = req.body;
 
-  if (!orderStatuses.includes(status)) {
+  const adminOrderStatuses = [
+    "new",
+    "processing",
+    "shipped",
+    "delivered"
+  ];
+
+  if (!adminOrderStatuses.includes(status)) {
     return res.status(400).json({
       message: "Ungültiger Bestellstatus."
     });
@@ -1458,7 +1465,10 @@ app.get("/admins", requireAdmin, (req, res) => {
       if (a.role === "main_admin") return -1;
       if (b.role === "main_admin") return 1;
 
-      return (a.createdAt || 0) - (b.createdAt || 0);
+      return (
+        new Date(a.createdAt || 0).getTime() -
+        new Date(b.createdAt || 0).getTime()
+      );
     })
     .map((user) => ({
       id: user.id,
@@ -1495,6 +1505,38 @@ app.post("/admins", requireMainAdmin, async (req, res) => {
     });
   }
 
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const newAdmin = {
+    id: `user-${Date.now()}`,
+    firstName,
+    lastName,
+    email,
+    passwordHash,
+    role: "admin",
+    address: {
+      street: "",
+      postalCode: "",
+      city: "",
+      country: ""
+    },
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newAdmin);
+  writeUsers(users);
+
+  res.status(201).json({
+    id: newAdmin.id,
+    firstName: newAdmin.firstName,
+    lastName: newAdmin.lastName,
+    email: newAdmin.email,
+    role: newAdmin.role,
+    createdAt: newAdmin.createdAt
+  });
+});
+
+
 // Updates an admin
 app.put("/admins/:id", requireAdmin, (req, res) => {
   const { firstName, lastName, email } = req.body;
@@ -1521,7 +1563,6 @@ app.put("/admins/:id", requireAdmin, (req, res) => {
 
   const targetAdmin = users[adminIndex];
 
-  // Normal admins may only edit their own account.
   if (
     req.user.role === "admin" &&
     req.user.id !== targetAdmin.id
@@ -1561,37 +1602,6 @@ app.put("/admins/:id", requireAdmin, (req, res) => {
     email: updatedAdmin.email,
     role: updatedAdmin.role,
     createdAt: updatedAdmin.createdAt || null
-  });
-});
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const newAdmin = {
-    id: `user-${Date.now()}`,
-    firstName,
-    lastName,
-    email,
-    passwordHash,
-    role: "admin",
-    address: {
-      street: "",
-      postalCode: "",
-      city: "",
-      country: ""
-    },
-    createdAt: new Date().toISOString()
-  };
-
-  users.push(newAdmin);
-  writeUsers(users);
-
-  res.status(201).json({
-    id: newAdmin.id,
-    firstName: newAdmin.firstName,
-    lastName: newAdmin.lastName,
-    email: newAdmin.email,
-    role: newAdmin.role,
-    createdAt: newAdmin.createdAt
   });
 });
 

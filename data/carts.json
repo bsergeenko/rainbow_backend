@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "userId": "user-1792587242624",
+    "items": [
+      {
+        "itemId": "cart-1794660895299",
+        "productId": "women-raincoat",
+        "quantity": 1,
+        "color": "black",
+        "size": "XS",
+        "designId": "adult-design-02",
+        "pocketRequest": ""
+      },
+      {
+        "itemId": "cart-1794660903850",
+        "productId": "men-raincoat",
+        "quantity": 1,
+        "color": "grey",
+        "size": "S",
+        "designId": null,
+        "pocketRequest": ""
+      },
+      {
+        "itemId": "cart-1794660927222",
+        "productId": "dog-raincoat",
+        "quantity": 1,
+        "color": "aquablue",
+        "size": "M",
+        "designId": "adult-design-03",
+        "pocketRequest": ""
+      }
+    ]
+  },
+  {
+    "userId": "user-1794661114264",
+    "items": []
+  }
+]
