@@ -5,6 +5,6 @@
     "lastName": "Rainbow",
     "email": "admin@rainbow.design",
     "passwordHash": "$2b$10$JbFqu4stO08Ii5Wc/kBF6elnPTLa1.QhHTu28YYPCwgcs0awgi7Xi",
-    "role": "admin"
+    "role": "main_admin"
   }
 ]

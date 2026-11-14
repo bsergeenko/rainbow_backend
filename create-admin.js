@@ -26,7 +26,7 @@ async function createAdmin() {
     lastName: "Rainbow",
     email: adminEmail,
     passwordHash,
-    role: "admin"
+    role: "main_admin"
   };
 
   users.push(adminUser);

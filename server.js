@@ -133,7 +133,34 @@ function requireAdmin(req, res, next) {
     (user) => user.id === req.session.userId
   );
 
-  if (!user || user.role !== "admin") {
+  if (
+    !user ||
+    !["admin", "main_admin"].includes(user.role)
+  ) {
+    return res.status(403).json({
+      message: "Keine Berechtigung."
+    });
+  }
+
+    req.user = user;
+    next();
+  }
+
+// Hauptadministrator-Berechtigungsprüfung
+function requireMainAdmin(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Nicht angemeldet."
+    });
+  }
+
+  const users = readUsers();
+
+  const user = users.find(
+    (user) => user.id === req.session.userId
+  );
+
+  if (!user || user.role !== "main_admin") {
     return res.status(403).json({
       message: "Keine Berechtigung."
     });
@@ -380,7 +407,8 @@ if (guestCartItems.length > 0) {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
-    email: user.email
+    email: user.email,
+    role: user.role
   });
 });
 
@@ -588,9 +616,9 @@ app.delete("/me", (req, res) => {
     });
   }
 
-  if (users[userIndex].role === "admin") {
+  if (["admin", "main_admin"].includes(users[userIndex].role)) {
     return res.status(400).json({
-      message: "Der Administrator kann sein eigenes Konto nicht löschen."
+      message: "Administratorkonten können hier nicht gelöscht werden."
     });
   }
 
@@ -1416,22 +1444,208 @@ app.post("/contact", (req, res) => {
 });
 
 // Admin API
-app.get("/users", requireAdmin, (req, res) => {
+
+
+// Returns all admins (admin only)
+app.get("/admins", requireAdmin, (req, res) => {
   const users = readUsers();
 
-  const safeUsers = users.map((user) => ({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
-    address: user.address || {
+  const admins = users
+    .filter((user) =>
+      ["main_admin", "admin"].includes(user.role)
+    )
+    .sort((a, b) => {
+      if (a.role === "main_admin") return -1;
+      if (b.role === "main_admin") return 1;
+
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    })
+    .map((user) => ({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt || null
+    }));
+
+  res.json(admins);
+});
+
+// Creates a new admin (main admin only)
+app.post("/admins", requireMainAdmin, async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({
+      message: "Vorname, Nachname, E-Mail-Adresse und Passwort sind erforderlich."
+    });
+  }
+
+  const users = readUsers();
+
+  const existingUser = users.find(
+    (user) =>
+      user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (existingUser) {
+    return res.status(409).json({
+      message: "Diese E-Mail-Adresse ist bereits registriert."
+    });
+  }
+
+// Updates an admin
+app.put("/admins/:id", requireAdmin, (req, res) => {
+  const { firstName, lastName, email } = req.body;
+
+  if (!firstName || !lastName || !email) {
+    return res.status(400).json({
+      message: "Vorname, Nachname und E-Mail-Adresse sind erforderlich."
+    });
+  }
+
+  const users = readUsers();
+
+  const adminIndex = users.findIndex(
+    (user) =>
+      user.id === req.params.id &&
+      ["main_admin", "admin"].includes(user.role)
+  );
+
+  if (adminIndex === -1) {
+    return res.status(404).json({
+      message: "Administrator wurde nicht gefunden."
+    });
+  }
+
+  const targetAdmin = users[adminIndex];
+
+  // Normal admins may only edit their own account.
+  if (
+    req.user.role === "admin" &&
+    req.user.id !== targetAdmin.id
+  ) {
+    return res.status(403).json({
+      message: "Keine Berechtigung."
+    });
+  }
+
+  const duplicateEmail = users.find(
+    (user) =>
+      user.id !== targetAdmin.id &&
+      user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (duplicateEmail) {
+    return res.status(409).json({
+      message: "Diese E-Mail-Adresse ist bereits registriert."
+    });
+  }
+
+  users[adminIndex] = {
+    ...targetAdmin,
+    firstName,
+    lastName,
+    email
+  };
+
+  writeUsers(users);
+
+  const updatedAdmin = users[adminIndex];
+
+  res.json({
+    id: updatedAdmin.id,
+    firstName: updatedAdmin.firstName,
+    lastName: updatedAdmin.lastName,
+    email: updatedAdmin.email,
+    role: updatedAdmin.role,
+    createdAt: updatedAdmin.createdAt || null
+  });
+});
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const newAdmin = {
+    id: `user-${Date.now()}`,
+    firstName,
+    lastName,
+    email,
+    passwordHash,
+    role: "admin",
+    address: {
       street: "",
       postalCode: "",
       city: "",
       country: ""
-    }
-  }));
+    },
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newAdmin);
+  writeUsers(users);
+
+  res.status(201).json({
+    id: newAdmin.id,
+    firstName: newAdmin.firstName,
+    lastName: newAdmin.lastName,
+    email: newAdmin.email,
+    role: newAdmin.role,
+    createdAt: newAdmin.createdAt
+  });
+});
+
+// Deletes an admin (main admin only)
+app.delete("/admins/:id", requireMainAdmin, (req, res) => {
+  const users = readUsers();
+
+  const adminIndex = users.findIndex(
+    (user) =>
+      user.id === req.params.id &&
+      ["main_admin", "admin"].includes(user.role)
+  );
+
+  if (adminIndex === -1) {
+    return res.status(404).json({
+      message: "Administrator wurde nicht gefunden."
+    });
+  }
+
+  const targetAdmin = users[adminIndex];
+
+  if (targetAdmin.id === req.user.id) {
+    return res.status(400).json({
+      message: "Der Hauptadministrator kann sich nicht selbst löschen."
+    });
+  }
+
+  users.splice(adminIndex, 1);
+  writeUsers(users);
+
+  res.json({
+    message: "Administrator wurde gelöscht."
+  });
+});
+
+// Returns all normal users (admin only)
+app.get("/users", requireAdmin, (req, res) => {
+  const users = readUsers();
+
+  const safeUsers = users
+    .filter((user) => user.role === "user")
+    .map((user) => ({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      address: user.address || {
+        street: "",
+        postalCode: "",
+        city: "",
+        country: ""
+      }
+    }));
 
   res.json(safeUsers);
 });
